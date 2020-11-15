@@ -1,3 +1,4 @@
+import json
 # Funcionalidades implementadas: Cadastro novos livros, Cadastro Categorias
 # Adicionar titulos que podem ser reservados, Login no sistema
 # Grupo:    Eduardo José Pereira de Sena
@@ -54,29 +55,24 @@ def buscarLivros():
         for i in livros:
             if i["titulo"] == nomeLivro:
                 print(i)
-            else:
-                print("• Não existe livro com o titulo desejado •")
+
     if opcaoBusca == 2:
         anoLivro = str(input("Ano: "))
         for i in livros:
             if i["ano"] == anoLivro:
                 print(i)
-            else:
-                print("• Não existe livro com o ano desejado •")
+
     if opcaoBusca == 3:
         catLivro = str(input("Categoria: "))
         for i in livros:
             if i["categoria"] == catLivro:
                 print(i)
-            else:
-                print("• Não existe livro com a categoria desejada •")
+
     if opcaoBusca == 4:
         temaLivro = str(input("Tematica: "))
         for i in livros:
             if i["tematica"] == temaLivro:
                 print(i)
-            else:
-                print("• Não existe livro com a tematica desejada •")
 
 def atualizarQuantidade():
     nomeLivro = str(input("Digite o titulo do livro que deseja atualizar a quantidade: "))
@@ -90,6 +86,21 @@ def removerLivros():
     for i in livros:
         if i["titulo"] == removerLivro:
             livros.remove(i)
+
+def importarLivros():
+    opcao = str(input(f"Deseja importar os dados do arquivo 'livros.json'? [S/N]: "))[0].upper().strip()
+    if opcao == 'S':
+        with open('livros.json', 'r', encoding='utf8') as json_file:
+            obj = json.loads(json_file.read())
+            for i in obj:
+                livros.append(i)
+
+            print("• Dados importados com sucesso •")
+    elif opcao == 'N':
+        opcaoMenu = menu()
+    else:
+        print("Opção inválida, tente novamente.")
+        importarLivros()
 
 ## VARIAVEIS
 livros = []
@@ -110,11 +121,15 @@ def main():
 
     opcaoMenu = menu()
     while opcaoMenu != 10:
-        print("• CADASTRO DE LIVROS •\n")
-        if opcaoMenu == 1:  # Cadastro de livros
 
+        if opcaoMenu == 1:  # Cadastro de livros
+            print("• CADASTRO DE LIVROS •\n")
             livros.append(cadastrodenovoslivros())
 
+            with open('livros.json', 'w', encoding='utf-8') as json_file:
+                json.dump(livros, json_file, indent=1, ensure_ascii=False)
+
+            print(livros)
             opcaoMenu = menu()
 
         elif opcaoMenu == 2:  # Atualizar quantidade de um determinado titulo
@@ -135,9 +150,15 @@ def main():
 
             opcaoMenu = menu()
 
-        '''elif opcaoMenu == 5:  # Importar dados
+        elif opcaoMenu == 5:  # Importar dados
+            print("• IMPORTANDO DADOS •")
+            livros.append(importarLivros())
+            livros.pop(len(livros)-1)
 
-        elif opcaoMenu == 6:  # Obter Status dos livro [alugado/disponivel]
+            print(livros)
+            opcaoMenu = menu()
+
+        '''elif opcaoMenu == 6:  # Obter Status dos livro [alugado/disponivel]
 
         elif opcaoMenu == 7:  # Gerar relatórios do acervo completo, por categoria ou por temática
 
