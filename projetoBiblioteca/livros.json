@@ -1,6 +1,7 @@
 [
  {
-  "titulo": "Do mil ao milhão",
+  "titulo": "Do Mil Ao Milhão",
+  "autor": "Thiago Nigro",
   "ano": "2018",
   "quantidade": "5",
   "categoria": "Fisico",
@@ -8,11 +9,75 @@
   "reservado": "s"
  },
  {
-  "titulo": "Principios de química",
-  "ano": "1999",
+  "titulo": "Frankenstein",
+  "autor": "Mary Shelley",
+  "ano": "1994",
+  "quantidade": "2",
+  "categoria": "Fisico",
+  "tematica": "Terror",
+  "reservado": "n"
+ },
+ {
+  "titulo": "Introdução À Programação Com Python",
+  "autor": "Nilo Ney Coutinho Menezes",
+  "ano": "2010",
+  "quantidade": "5",
+  "categoria": "Fisico",
+  "tematica": "Programação",
+  "reservado": "s"
+ },
+ {
+  "titulo": "Java Como Programar",
+  "autor": "Paul Deitel",
+  "ano": "1996",
+  "quantidade": "7",
+  "categoria": "Fisico",
+  "tematica": "Programação",
+  "reservado": "s"
+ },
+ {
+  "titulo": "Cinquenta Tons de Cinza",
+  "autor": "E. L. James",
+  "ano": "2011",
   "quantidade": "1",
   "categoria": "Digital",
-  "tematica": "Educação",
+  "tematica": "Romance",
   "reservado": "n"
+ },
+ {
+  "titulo": "O Poder Do Hábito",
+  "autor": "Charles Duhigg",
+  "ano": "2012",
+  "quantidade": "1",
+  "categoria": "Digital",
+  "tematica": "Auto Ajuda",
+  "reservado": "n"
+ },
+ {
+  "titulo": "O Investidor Inteligente",
+  "autor": "Benjamin Graham",
+  "ano": "2016",
+  "quantidade": "1",
+  "categoria": "Digital",
+  "tematica": "Finanças",
+  "reservado": "n"
+ },
+ {
+  "titulo": "Game Of Thrones",
+  "autor": "George R.R. Martin",
+  "ano": "2019",
+  "quantidade": "2",
+  "categoria": "Fisico",
+  "tematica": "Fantasia",
+  "reservado": "n"
+ },
+ {
+  "titulo": "Essa Gente",
+  "autor": "Chico buarque",
+  "ano": "2019",
+  "quantidade": "2",
+  "categoria": "Fisico",
+  "tematica": "Ficção",
+  "reservado": "s"
  }
 ]
