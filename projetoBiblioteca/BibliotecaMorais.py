@@ -1,4 +1,6 @@
 import json
+import os.path
+
 # Funcionalidades implementadas: Cadastro novos livros, Cadastro Categorias
 # Adicionar titulos que podem ser reservados, Login no sistema
 # Grupo:    Eduardo José Pereira de Sena
@@ -45,6 +47,8 @@ def menu():
     return resposta
 
 def buscarLivros():
+    livroEncontrado = 'não'
+    livroNaoEncontrado = 'não'
     print("[1] Buscar por titulo\n"
           "[2] Buscar por ano\n"
           "[3] Buscar por categoria\n"
@@ -55,24 +59,43 @@ def buscarLivros():
         for i in livros:
             if i["titulo"] == nomeLivro:
                 print(i)
+                livroEncontrado = "sim"
+            else:
+                livroNaoEncontrado = "sim"
+        if livroEncontrado == "não" and livroNaoEncontrado == "sim":
+            print("\n• Não foi encontrado livro com esse titulo • ")
 
     if opcaoBusca == 2:
         anoLivro = str(input("Ano: "))
         for i in livros:
             if i["ano"] == anoLivro:
                 print(i)
+                livroEncontrado = "sim"
+            else:
+                livroNaoEncontrado = "sim"
+        if livroEncontrado == "não" and livroNaoEncontrado == "sim":
+            print("\n• Não foi encontrado livro com esse ano de lançamento • ")
 
     if opcaoBusca == 3:
-        catLivro = str(input("Categoria: "))
+        catLivro = str(input("Categoria [Fisico/Digital]: "))
         for i in livros:
             if i["categoria"] == catLivro:
                 print(i)
-
+                livroEncontrado = "sim"
+            else:
+                livroNaoEncontrado = "sim"
+        if livroEncontrado == "não" and livroNaoEncontrado == "sim":
+            print("\n• Não foi encontrado livro com essa categoria • ")
     if opcaoBusca == 4:
         temaLivro = str(input("Tematica: "))
         for i in livros:
             if i["tematica"] == temaLivro:
                 print(i)
+                livroEncontrado = "sim"
+            else:
+                livroNaoEncontrado = "sim"
+        if livroEncontrado == "não" and livroNaoEncontrado == "sim":
+            print("\n• Não foi encontrado livro com essa temática • ")
 
 def atualizarQuantidade():
     nomeLivro = str(input("Digite o titulo do livro que deseja atualizar a quantidade: "))
@@ -81,13 +104,13 @@ def atualizarQuantidade():
         if i["titulo"] == nomeLivro:
             i["quantidade"] = quantLivro
 
-def removerLivros():
+def removerLivros():  #Função para remover livros do sistema
     removerLivro = str(input("Digite o titulo do livro que deseja remover: "))
     for i in livros:
         if i["titulo"] == removerLivro:
             livros.remove(i)
 
-def importarLivros():
+def importarLivros():  #Função para importar livros para o sistema
     opcao = str(input(f"Deseja importar os dados do arquivo 'livros.json'? [S/N]: "))[0].upper().strip()
     if opcao == 'S':
         with open('livros.json', 'r', encoding='utf8') as json_file:
@@ -97,7 +120,25 @@ def importarLivros():
 
             print("• Dados importados com sucesso •")
     elif opcao == 'N':
-        opcaoMenu = menu()
+        opc = str(input(f"Deseja importar os dados de outro arquivo json? [S/N]: "))[0].upper().strip()
+        if opc == "S":
+            arq = str(input("Qual o nome do arquivo json a ser importado? siga o padrão "
+                            "[nomeArquivo.json]: "))
+            if os.path.exists(arq) == True:
+                with open(arq, 'r', encoding='utf8') as json_file:
+                    obj = json.loads(json_file.read())
+                    for i in obj:
+                        livros.append(i)
+
+                    print("• Dados importados com sucesso •")
+            else:
+                print("• Arquivo não existente •")
+                importarLivros()
+        elif opc == "N":
+            pass
+        else:
+            print("Opção inválida, tente novamente.")
+            importarLivros()
     else:
         print("Opção inválida, tente novamente.")
         importarLivros()
@@ -118,7 +159,7 @@ def main():
         else:
             print("• Id ou senha inválido, tente novamente •")
             statusLogin = loginSistema()
-
+    importarLivros()
     opcaoMenu = menu()
     while opcaoMenu != 10:
 
@@ -126,11 +167,24 @@ def main():
             print("• CADASTRO DE LIVROS •\n")
             livros.append(cadastrodenovoslivros())
 
-            with open('livros.json', 'w', encoding='utf-8') as json_file:
-                json.dump(livros, json_file, indent=1, ensure_ascii=False)
-
-            print(livros)
-            opcaoMenu = menu()
+            export = str(input("Deseja exportar os dados do livro cadastrados "
+                               "para o arquivo 'livros.json'? [S/N]: "))[0].strip().upper()
+            if export == "S":
+                with open('livros.json', 'w', encoding='utf-8') as json_file:
+                    json.dump(livros, json_file, indent=1, ensure_ascii=False)
+            elif export == "N":
+                opc = str(input("Deseja exportar os dados para outro arquivo? [S/N]: "))[0].strip().upper()
+                if opc == "S":
+                    arq = str(input("Qual o nome do arquivo json a ser salvo? siga o padrão "
+                                    "[nomeArquivo.json]: "))
+                    with open(arq, 'w', encoding='utf-8') as json_file:
+                        json.dump(livros, json_file, indent=1, ensure_ascii=False)
+                    opcaoMenu = menu()
+                else:
+                    opcaoMenu = menu()
+            else:
+                print("Opção inválida")
+                opcaoMenu = 1
 
         elif opcaoMenu == 2:  # Atualizar quantidade de um determinado titulo
             print("• ATUALIZAÇÃO DE QUANTIDADE •\n")
@@ -158,17 +212,17 @@ def main():
             print(livros)
             opcaoMenu = menu()
 
-        '''elif opcaoMenu == 6:  # Obter Status dos livro [alugado/disponivel]
-
+        elif opcaoMenu == 6:  # Obter Status dos livro [alugado/disponivel]
+            pass
         elif opcaoMenu == 7:  # Gerar relatórios do acervo completo, por categoria ou por temática
-
+            pass
         elif opcaoMenu == 8:  # Alugar determinado titulo
-
+            pass
         elif opcaoMenu == 9:  # Sair do sistema
             break
         else:
             print("Entrada invalida tente novamente !!!")
-            resposta = input("Digite a opção desejada: ")'''
+            opcaoMenu = menu()
 main()
 
 
