@@ -7,7 +7,6 @@ from reportlab.pdfgen import canvas
 #           André Luis Moreira da Silva Santos
 
 def main():
-
     ##lOGIN DO SISTEMA - id = admin / senha = 1234
     print("• Morais Lybrary •")
     statusLogin = Biblioteca.loginSistema()
