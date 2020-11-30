@@ -1,5 +1,8 @@
 import os.path
 import json
+from reportlab.pdfgen import canvas
+
+
 
 def cadastroFuncionario():
     idFuncionario = 'admin'
@@ -93,19 +96,38 @@ def buscarLivros():
             print("\n• Não foi encontrado livro com essa temática • ")
 
 def atualizarQuantidade():  # Função para atualizar a quantidade de determinado livro
+    livroEncontrado = 'não'
+    livroNaoEncontrado = 'não'
     nomeLivro = str(input("Digite o titulo do livro que deseja atualizar a quantidade: ")).title().strip()
-    quantLivro = int(input("Nova quantidade: "))
     for i in livros:
         if i["titulo"] == nomeLivro:
+            quantLivro = int(input("Nova quantidade: "))
             i["quantidade"] = quantLivro
 
+            print("• Atualizado com sucesso •")
+            livroEncontrado = "sim"
+        else:
+            livroNaoEncontrado = "sim"
+    if livroEncontrado == "não" and livroNaoEncontrado == "sim":
+        print("\n• Livro não encontrado • ")
+
 def removerLivros():  # Função para remover livros do sistema
+    livroEncontrado = 'não'
+    livroNaoEncontrado = 'não'
     removerLivro = str(input("Digite o titulo do livro que deseja remover: ")).title().strip()
     for i in livros:
         if i["titulo"] == removerLivro:
             livros.remove(i)
+            print(f"• Livro {removerLivro} removido com sucesso! •")
+            livroEncontrado = "sim"
+            return True
+        else:
+            livroNaoEncontrado = "sim"
     if removerLivro == "":
         pass
+    if livroEncontrado == "não" and livroNaoEncontrado == "sim":
+        print("\n• Livro não encontrado • ")
+        return False
 
 def importarLivros():  # Função para importar livros para o sistema
     opcao = str(input(f"Deseja importar os dados do arquivo 'livros.json'? [S/N]: "))[0].upper().strip()
@@ -156,10 +178,31 @@ def statusLivro():
     if livroEncontrado == "não" and livroNaoEncontrado == "sim":
         print("\n• Não foi encontrado livro com essa temática • ")
 
+def GeradorPDF(lista, relatorio):
+
+    try:
+        nome_pdf = input('Informe o nome do PDF: ')
+        pdf = canvas.Canvas('{}.pdf'.format(nome_pdf))
+        x = 710
+        pdf.setTitle(nome_pdf)
+        pdf.setFont("Helvetica-Oblique", 14)
+        pdf.drawString(200, 780, 'MORAIS LIBRARY'.center(40, " "))
+        pdf.setFont("Helvetica-Bold", 12)
+        pdf.drawString(220, 754, f'•Relatório {relatorio}•'.center(40, " "))
+        pdf.drawString(180, 740, '--------------------'*3)
+        pdf.drawString(180, 725, f"Total de livros: {len(lista)}")
+        pdf.drawString(180, 710, '--------------------'*3)
+        for i in lista:
+            x -= 20
+            pdf.drawString(180, x, i['titulo'])
+        pdf.save()
+    except:
+        print(f'Erro ao gerar {nome_pdf}.pdf')
+
+
 def relatorios():
     livroEncontrado = 'não'
     livroNaoEncontrado = 'não'
-    relatorioCriado = False
     print("[1] Relatório Acervo\n"
           "[2] Relatório por categoria\n"
           "[3] Relatório por temática\n"
@@ -167,73 +210,43 @@ def relatorios():
     opcaoBusca = int(input("Digite a opção: "))
     if opcaoBusca == 1:
         print("Relatório sendo gerado...")
-        relatorio = open('relatoriocompleto.txt', 'w', encoding="utf8")
-        relatorio.writelines('RELATÓRIO DO ACERVO'.center(40, " ") + "\n")
-        relatorio.writelines('MORAIS LIBRARY'.center(40, " ") + "\n")
-        for i in livros:
-            relatorio.write("=" * 40 + "\n")
-            relatorio.write(f"Livro: {i['titulo']}".center(40, " ") + "\n" +
-                            f"Ano: {i['ano']}".center(40, " ") + "\n" +
-                            f"Autor: {i['autor']}".center(40, " ") + "\n" +
-                            f"Quantidade de exemplares: {i['quantidade']}".center(40, " ") + "\n" +
-                            f"Categoria: {i['categoria']}".center(40, " ") + "\n" +
-                            f"Tema: {i['tematica']}".center(40, " ") + "\n")
-        relatorio.close()
+        GeradorPDF(livros, "completo")
         print('Relatório gerado com sucesso!!')
 
     elif opcaoBusca == 2:
         catLivro = str(input("Categoria [Fisico/Digital]: ")).title().strip()
-
+        listaTemp = []
         for i in livros:
-            if i['categoria'] == catLivro and relatorioCriado == False:
-                print("Relatório sendo gerado...")
-                relatorio = open(f'relatorioLivros{catLivro}.txt', 'w', encoding="utf8")
-                relatorio.writelines('RELATÓRIO DO ACERVO'.center(40, " ") + "\n")
-                relatorio.writelines('MORAIS LIBRARY'.center(40, " ") + "\n")
-                relatorio.writelines(F'CATEGORIA: Livros {catLivro}'.center(40, " ") + "\n")
-                relatorioCriado = True
             if i['categoria'] == catLivro:
-                relatorio.write("=" * 40 + "\n")
-                relatorio.write(f"Livro: {i['titulo']}".center(40, " ") + "\n" +
-                                f"Ano: {i['ano']}".center(40, " ") + "\n" +
-                                f"Autor: {i['autor']}".center(40, " ") + "\n" +
-                                f"Quantidade de exemplares: {i['quantidade']}".center(40, " ") + "\n" +
-                                f"Categoria: {i['categoria']}".center(40, " ") + "\n" +
-                                f"Tema: {i['tematica']}".center(40, " ") + "\n")
+                listaTemp.append(i)
                 livroEncontrado = "sim"
             else:
                 livroNaoEncontrado = "sim"
-        print(livroEncontrado)
-        print(livroNaoEncontrado)
-        if livroEncontrado == "não" and livroNaoEncontrado == "sim":
-            print("\n• Não foi encontrado livro com essa categoria • ")
 
+        if livroEncontrado == "sim":
+            print("Relatório sendo gerado...")
+            GeradorPDF(listaTemp, f"por categoria {catLivro}")
+            print('Relatório gerado com sucesso!!')
+        elif livroEncontrado == "não" and livroNaoEncontrado == "sim":
+            print("\n• Não foi encontrado livro com essa categoria • ")
+        listaTemp.clear()
     elif opcaoBusca == 3:
         temaLivro = str(input("Tema: ")).title().strip()
-
+        listaTemp = []
         for i in livros:
-            if i['tematica'] == temaLivro and relatorioCriado == False:
-                print("Relatório sendo gerado...")
-                relatorio = open(f'relatorio{temaLivro}.txt', 'w', encoding="utf8")
-                relatorio.writelines('RELATÓRIO DO ACERVO'.center(40, " ") + "\n")
-                relatorio.writelines('MORAIS LIBRARY'.center(40, " ") + "\n")
-                relatorio.writelines(F'CATEGORIA: {temaLivro}'.center(40, " ") + "\n")
-                relatorioCriado = True
             if i['tematica'] == temaLivro:
-                relatorio.write("=" * 40 + "\n")
-                relatorio.write(f"Livro: {i['titulo']}".center(40, " ") + "\n" +
-                                f"Ano: {i['ano']}".center(40, " ") + "\n" +
-                                f"Autor: {i['autor']}".center(40, " ") + "\n" +
-                                f"Quantidade de exemplares: {i['quantidade']}".center(40, " ") + "\n" +
-                                f"Categoria: {i['categoria']}".center(40, " ") + "\n" +
-                                f"Tema: {i['tematica']}".center(40, " ") + "\n")
+                listaTemp.append(i)
                 livroEncontrado = "sim"
             else:
                 livroNaoEncontrado = "sim"
-        print(livroEncontrado)
-        print(livroNaoEncontrado)
-        if livroEncontrado == "não" and livroNaoEncontrado == "sim":
+
+        if livroEncontrado == "sim":
+            print("Relatório sendo gerado...")
+            GeradorPDF(listaTemp, f"por tema {temaLivro}")
+            print('Relatório gerado com sucesso!!')
+        elif livroEncontrado == "não" and livroNaoEncontrado == "sim":
             print("\n• Não foi encontrado livro com essa tematica • ")
+        listaTemp.clear()
     elif opcaoBusca == 4:
         pass
     else:
